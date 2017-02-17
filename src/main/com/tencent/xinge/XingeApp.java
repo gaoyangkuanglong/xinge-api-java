@@ -20,26 +20,27 @@ import org.json.JSONObject;
 
 public class XingeApp {
 
-    public static final String RESTAPI_PUSHSINGLEDEVICE = "http://openapi.xg.qq.com/v2/push/single_device";
-    public static final String RESTAPI_PUSHSINGLEACCOUNT = "http://openapi.xg.qq.com/v2/push/single_account";
-    public static final String RESTAPI_PUSHACCOUNTLIST = "http://openapi.xg.qq.com/v2/push/account_list";
-    public static final String RESTAPI_PUSHALLDEVICE = "http://openapi.xg.qq.com/v2/push/all_device";
-    public static final String RESTAPI_PUSHTAGS = "http://openapi.xg.qq.com/v2/push/tags_device";
-    public static final String RESTAPI_QUERYPUSHSTATUS = "http://openapi.xg.qq.com/v2/push/get_msg_status";
-    public static final String RESTAPI_QUERYDEVICECOUNT = "http://openapi.xg.qq.com/v2/application/get_app_device_num";
-    public static final String RESTAPI_QUERYTAGS = "http://openapi.xg.qq.com/v2/tags/query_app_tags";
-    public static final String RESTAPI_CANCELTIMINGPUSH = "http://openapi.xg.qq.com/v2/push/cancel_timing_task";
-    public static final String RESTAPI_BATCHSETTAG = "http://openapi.xg.qq.com/v2/tags/batch_set";
-    public static final String RESTAPI_BATCHDELTAG = "http://openapi.xg.qq.com/v2/tags/batch_del";
-    public static final String RESTAPI_QUERYTOKENTAGS = "http://openapi.xg.qq.com/v2/tags/query_token_tags";
-    public static final String RESTAPI_QUERYTAGTOKENNUM = "http://openapi.xg.qq.com/v2/tags/query_tag_token_num";
-    public static final String RESTAPI_CREATEMULTIPUSH = "http://openapi.xg.qq.com/v2/push/create_multipush";
-    public static final String RESTAPI_PUSHACCOUNTLISTMULTIPLE = "http://openapi.xg.qq.com/v2/push/account_list_multiple";
-    public static final String RESTAPI_PUSHDEVICELISTMULTIPLE = "http://openapi.xg.qq.com/v2/push/device_list_multiple";
-    public static final String RESTAPI_QUERYINFOOFTOKEN = "http://openapi.xg.qq.com/v2/application/get_app_token_info";
-    public static final String RESTAPI_QUERYTOKENSOFACCOUNT = "http://openapi.xg.qq.com/v2/application/get_app_account_tokens";
-    public static final String RESTAPI_DELETETOKENOFACCOUNT = "http://openapi.xg.qq.com/v2/application/del_app_account_tokens";
-    public static final String RESTAPI_DELETEALLTOKENSOFACCOUNT = "http://openapi.xg.qq.com/v2/application/del_app_account_all_tokens";
+    public static final String RESTAPI_PUSHSINGLEDEVICE = "http://%s/v2/push/single_device";
+    public static final String RESTAPI_PUSHSINGLEACCOUNT = "http://%s/v2/push/single_account";
+    public static final String RESTAPI_PUSHACCOUNTLIST = "http://%s/v2/push/account_list";
+    public static final String RESTAPI_PUSHALLDEVICE = "http://%s/v2/push/all_device";
+    public static final String RESTAPI_PUSHTAGS = "http://%s/v2/push/tags_device";
+    public static final String RESTAPI_QUERYPUSHSTATUS = "http://%s/v2/push/get_msg_status";
+    public static final String RESTAPI_QUERYDEVICECOUNT = "http://%s/v2/application/get_app_device_num";
+    public static final String RESTAPI_QUERYTAGS = "http://%s/v2/tags/query_app_tags";
+    public static final String RESTAPI_CANCELTIMINGPUSH = "http://%s/v2/push/cancel_timing_task";
+    public static final String RESTAPI_BATCHSETTAG = "http://%s/v2/tags/batch_set";
+    public static final String RESTAPI_BATCHDELTAG = "http://%s/v2/tags/batch_del";
+    public static final String RESTAPI_QUERYTOKENTAGS = "http://%s/v2/tags/query_token_tags";
+    public static final String RESTAPI_QUERYTAGTOKENNUM = "http://%s/v2/tags/query_tag_token_num";
+    public static final String RESTAPI_CREATEMULTIPUSH = "http://%s/v2/push/create_multipush";
+    public static final String RESTAPI_PUSHACCOUNTLISTMULTIPLE = "http://%s/v2/push/account_list_multiple";
+    public static final String RESTAPI_PUSHDEVICELISTMULTIPLE = "http://%s/v2/push/device_list_multiple";
+    public static final String RESTAPI_QUERYINFOOFTOKEN = "http://%s/v2/application/get_app_token_info";
+    public static final String RESTAPI_QUERYTOKENSOFACCOUNT = "http://%s/v2/application/get_app_account_tokens";
+    public static final String RESTAPI_DELETETOKENOFACCOUNT = "http://%s/v2/application/del_app_account_tokens";
+    public static final String RESTAPI_DELETEALLTOKENSOFACCOUNT = "http://%s/v2/application/del_app_account_all_tokens";
+    public static final String RESTAPI_HOST = "openapi.xg.qq.com";
 
     public static final String HTTP_POST = "POST";
     public static final String HTTP_GET = "GET";
@@ -63,6 +64,13 @@ public class XingeApp {
     public XingeApp(long accessId, String secretKey) {
         this.m_accessId = accessId;
         this.m_secretKey = secretKey;
+        this.m_host = XingeApp.RESTAPI_HOST;
+    }
+
+    public XingeApp(long accessId, String secretKey, String host) {
+        this.m_accessId = accessId;
+        this.m_secretKey = secretKey;
+        this.m_host = host;
     }
 
     protected String generateSign(String method, String url, Map<String, Object> params) {
@@ -96,10 +104,11 @@ public class XingeApp {
         return md5Str;
     }
 
-    protected JSONObject callRestful(String url, Map<String, Object> params) {
+    protected JSONObject callRestful(String url_template, Map<String, Object> params) {
         String temp;
         String ret = "";
         JSONObject jsonRet = null;
+        String url = String.format(url_template, m_host);
         String sign = generateSign("POST", url, params);
         if (sign.isEmpty()) return new JSONObject("{\"ret_code\":-1,\"err_msg\":\"generateSign error\"}");
         params.put("sign", sign);
@@ -173,6 +182,7 @@ public class XingeApp {
 
     private long m_accessId;
     private String m_secretKey;
+    private String m_host;
 
     // ======================= 简易api接口 v1.1.4引入 =======================
 
@@ -184,17 +194,23 @@ public class XingeApp {
      * @param title 标题 标题
      * @param content 内容
      * @param token 目标设备token
+     * @param host 服务端域名
      * @return 服务器执行结果，JSON形式
      */
-    public static JSONObject pushTokenAndroid(long accessId, String secretKey, String title, String content, String token) {
+    public static JSONObject pushTokenAndroid(long accessId, String secretKey, String title, String content, String token, String host) {
         Message message = new Message();
         message.setType(Message.TYPE_NOTIFICATION);
         message.setTitle(title);
         message.setContent(content);
 
-        XingeApp xinge = new XingeApp(accessId, secretKey);
+        XingeApp xinge = new XingeApp(accessId, secretKey, host);
         JSONObject ret = xinge.pushSingleDevice(token, message);
         return (ret);
+    }
+
+    public static JSONObject pushTokenAndroid(long accessId, String secretKey, String title, String content, String token) {
+        String host = XingeApp.RESTAPI_HOST;
+        return pushTokenAndroid(accessId, secretKey, title, content, token, host);
     }
 
     /**
@@ -205,17 +221,23 @@ public class XingeApp {
      * @param title 标题
      * @param content 内容
      * @param account 目标账号
+     * @param host 服务端域名
      * @return 服务器执行结果，JSON形式
      */
-    public static JSONObject pushAccountAndroid(long accessId, String secretKey, String title, String content, String account) {
+    public static JSONObject pushAccountAndroid(long accessId, String secretKey, String title, String content, String account, String host) {
         Message message = new Message();
         message.setType(Message.TYPE_NOTIFICATION);
         message.setTitle(title);
         message.setContent(content);
 
-        XingeApp xinge = new XingeApp(accessId, secretKey);
+        XingeApp xinge = new XingeApp(accessId, secretKey, host);
         JSONObject ret = xinge.pushSingleAccount(0, account, message);
         return (ret);
+    }
+
+    public static JSONObject pushAccountAndroid(long accessId, String secretKey, String title, String content, String account) {
+        String host = XingeApp.RESTAPI_HOST;
+        return pushAccountAndroid(accessId, secretKey, title, content, account, host);
     }
 
     /**
@@ -225,17 +247,23 @@ public class XingeApp {
      * @param secretKey 推送密钥
      * @param title 标题
      * @param content 内容
+     * @param host 服务端域名
      * @return 服务器执行结果，JSON形式
      */
-    public static JSONObject pushAllAndroid(long accessId, String secretKey, String title, String content) {
+    public static JSONObject pushAllAndroid(long accessId, String secretKey, String title, String content, String host) {
         Message message = new Message();
         message.setType(Message.TYPE_NOTIFICATION);
         message.setTitle(title);
         message.setContent(content);
 
-        XingeApp xinge = new XingeApp(accessId, secretKey);
+        XingeApp xinge = new XingeApp(accessId, secretKey, host);
         JSONObject ret = xinge.pushAllDevice(0, message);
         return (ret);
+    }
+
+    public static JSONObject pushAllAndroid(long accessId, String secretKey, String title, String content) {
+        String host = XingeApp.RESTAPI_HOST;
+        return pushAllAndroid(accessId, secretKey, title, content, host);
     }
 
     /**
@@ -246,19 +274,25 @@ public class XingeApp {
      * @param title 标题
      * @param content 内容
      * @param tag 指定的标签
+     * @param host 服务端域名
      * @return 服务器执行结果，JSON形式
      */
-    public static JSONObject pushTagAndroid(long accessId, String secretKey, String title, String content, String tag) {
+    public static JSONObject pushTagAndroid(long accessId, String secretKey, String title, String content, String tag, String host) {
         Message message = new Message();
         message.setType(Message.TYPE_NOTIFICATION);
         message.setTitle(title);
         message.setContent(content);
 
-        XingeApp xinge = new XingeApp(accessId, secretKey);
+        XingeApp xinge = new XingeApp(accessId, secretKey, host);
         List<String> tagList = new ArrayList<String>();
         tagList.add(tag);
         JSONObject ret = xinge.pushTags(0, tagList, "OR", message);
         return (ret);
+    }
+
+    public static JSONObject pushTagAndroid(long accessId, String secretKey, String title, String content, String tag) {
+        String host = XingeApp.RESTAPI_HOST;
+        return pushTagAndroid(accessId, secretKey, title, content, tag, host);
     }
 
     /**
@@ -269,17 +303,23 @@ public class XingeApp {
      * @param content 内容
      * @param token 目标设备token
      * @param env 推送的目标环境 必须是其中一种： {@link #IOSENV_PROD}生产环境 {@link #IOSENV_DEV}开发环境
+     * @param host 服务端域名
      * @return 服务器执行结果，JSON形式
      */
-    public static JSONObject pushTokenIos(long accessId, String secretKey, String content, String token, int env) {
+    public static JSONObject pushTokenIos(long accessId, String secretKey, String content, String token, int env, String host) {
         MessageIOS message = new MessageIOS();
         message.setAlert(content);
         message.setBadge(1);
         message.setSound("beep.wav");
 
-        XingeApp xinge = new XingeApp(accessId, secretKey);
+        XingeApp xinge = new XingeApp(accessId, secretKey, host);
         JSONObject ret = xinge.pushSingleDevice(token, message, env);
         return (ret);
+    }
+
+    public static JSONObject pushTokenIos(long accessId, String secretKey, String content, String token, int env) {
+        String host = XingeApp.RESTAPI_HOST;
+        return pushTokenIos(accessId, secretKey, content, token, env, host);
     }
 
     /**
@@ -290,17 +330,23 @@ public class XingeApp {
      * @param content 内容
      * @param account 目标账号
      * @param env 推送的目标环境 必须是其中一种： {@link #IOSENV_PROD}生产环境 {@link #IOSENV_DEV}开发环境
+     * @param host 服务端域名
      * @return 服务器执行结果，JSON形式
      */
-    public static JSONObject pushAccountIos(long accessId, String secretKey, String content, String account, int env) {
+    public static JSONObject pushAccountIos(long accessId, String secretKey, String content, String account, int env, String host) {
         MessageIOS message = new MessageIOS();
         message.setAlert(content);
         message.setBadge(1);
         message.setSound("beep.wav");
 
-        XingeApp xinge = new XingeApp(accessId, secretKey);
+        XingeApp xinge = new XingeApp(accessId, secretKey, host);
         JSONObject ret = xinge.pushSingleAccount(0, account, message, env);
         return (ret);
+    }
+
+    public static JSONObject pushAccountIos(long accessId, String secretKey, String content, String account, int env) {
+        String host = XingeApp.RESTAPI_HOST;
+        return pushAccountIos(accessId, secretKey, content, account, env, host);
     }
 
     /**
@@ -310,17 +356,23 @@ public class XingeApp {
      * @param secretKey 推送密钥
      * @param content 内容
      * @param env 推送的目标环境 必须是其中一种： {@link #IOSENV_PROD}生产环境 {@link #IOSENV_DEV}开发环境
+     * @param host 服务端域名
      * @return 服务器执行结果，JSON形式
      */
-    public static JSONObject pushAllIos(long accessId, String secretKey, String content, int env) {
+    public static JSONObject pushAllIos(long accessId, String secretKey, String content, int env, String host) {
         MessageIOS message = new MessageIOS();
         message.setAlert(content);
         message.setBadge(1);
         message.setSound("beep.wav");
 
-        XingeApp xinge = new XingeApp(accessId, secretKey);
+        XingeApp xinge = new XingeApp(accessId, secretKey, host);
         JSONObject ret = xinge.pushAllDevice(0, message, env);
         return (ret);
+    }
+
+    public static JSONObject pushAllIos(long accessId, String secretKey, String content, int env) {
+        String host = XingeApp.RESTAPI_HOST;
+        return pushAllIos(accessId, secretKey, content, env, host);
     }
 
     /**
@@ -331,19 +383,25 @@ public class XingeApp {
      * @param content 内容
      * @param tag 指定的标签
      * @param env 推送的目标环境 必须是其中一种： {@link #IOSENV_PROD}生产环境 {@link #IOSENV_DEV}开发环境
+     * @param host 服务端域名
      * @return 服务器执行结果，JSON形式
      */
-    public static JSONObject pushTagIos(long accessId, String secretKey, String content, String tag, int env) {
+    public static JSONObject pushTagIos(long accessId, String secretKey, String content, String tag, int env, String host) {
         MessageIOS message = new MessageIOS();
         message.setAlert(content);
         message.setBadge(1);
         message.setSound("beep.wav");
 
-        XingeApp xinge = new XingeApp(accessId, secretKey);
+        XingeApp xinge = new XingeApp(accessId, secretKey, host);
         List<String> tagList = new ArrayList<String>();
         tagList.add(tag);
         JSONObject ret = xinge.pushTags(0, tagList, "OR", message, env);
         return (ret);
+    }
+
+    public static JSONObject pushTagIos(long accessId, String secretKey, String content, String tag, int env) {
+        String host = XingeApp.RESTAPI_HOST;
+        return pushTagIos(accessId, secretKey, content, tag, env, host);
     }
 
 
@@ -469,7 +527,7 @@ public class XingeApp {
     }
 
     /**
-     * 推送给多个账号，限Android设备使用 <br/>
+     * 推送给多个账号，限Android设备使用
      * 如果目标账号数超过10000，建议改用{@link #pushAccountListMultiple}接口
      *
      * @param deviceType 设备类型，请填0
@@ -498,7 +556,7 @@ public class XingeApp {
     }
 
     /**
-     * 推送给多个账号，限iOS设备使用 <br/>
+     * 推送给多个账号，限iOS设备使用
      * 如果目标账号数超过10000，建议改用{@link #pushAccountListMultiple}接口
      *
      * @param deviceType 设备类型，请填0
@@ -666,7 +724,7 @@ public class XingeApp {
     }
 
     /**
-     * 创建大批量推送消息，后续可调用{@link #pushAccountListMultiple}或{@link #pushDeviceListMultiple}接口批量添加设备，限Android系统使用<br/>
+     * 创建大批量推送消息，后续可调用{@link #pushAccountListMultiple}或{@link #pushDeviceListMultiple}接口批量添加设备，限Android系统使用
      * 此接口创建的任务不支持定时推送
      *
      * @param message 待推送的消息
@@ -691,7 +749,7 @@ public class XingeApp {
     }
 
     /**
-     * 创建大批量推送消息，后续可调用{@link #pushAccountListMultiple}或{@link #pushDeviceListMultiple}接口批量添加设备，限iOS系统使用<br/>
+     * 创建大批量推送消息，后续可调用{@link #pushAccountListMultiple}或{@link #pushDeviceListMultiple}接口批量添加设备，限iOS系统使用
      * 此接口创建的任务不支持定时推送
      *
      * @param message 待推送的消息
@@ -717,7 +775,7 @@ public class XingeApp {
     }
 
     /**
-     * 推送消息给大批量账号，可对同一个pushId多次调用此接口，限Android系统使用 <br/>
+     * 推送消息给大批量账号，可对同一个pushId多次调用此接口，限Android系统使用
      * 建议用户采用此接口自行控制发送时间
      *
      * @param pushId {@link #createMultipush}返回的push_id
@@ -738,7 +796,7 @@ public class XingeApp {
     }
 
     /**
-     * 推送消息给大批量设备，可对同一个pushId多次调用此接口，限Android系统使用 <br/>
+     * 推送消息给大批量设备，可对同一个pushId多次调用此接口，限Android系统使用
      * 建议用户采用此接口自行控制发送时间
      *
      * @param pushId {@link #createMultipush}返回的push_id
